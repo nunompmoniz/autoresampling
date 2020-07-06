@@ -1,0 +1,19 @@
+Package: autoresampling
+Type: Package
+Title: Automated Resampling Strategies for Imbalanced Learning
+Description: An Automated Machine Learning (AutoML) approach for tackling imbalanced domain learning tasks.
+  Provides a meta-learning-based method that approximates optimal solutions within a set of over 500 possible workflow 
+  (combination of learning algorithms and resampling strategies) configurations.
+Version: 0.1.0
+Authors@R: c(
+  person("Nuno","Moniz",email="nmmoniz@inesctec.pt",role=c("aut","cre")),
+  person("Vitor","Cerqueira",email="vitor.m.cerqueira@inesctec.pt",role="ctb"))
+Maintainer: Nuno Moniz <nmmoniz@inesctec.pt>
+URL: https://github.com/nunompmoniz/autoresampling
+BugReports: https://github.com/nunompmoniz/autoresampling/issues
+License: GPL-3
+Depends: R (>= 2.10)
+Imports: grDevices, ECoL, entropy, infotheo, minerva, moments, mlbench, AUC, MLmetrics, Metrics, e1071, rpart, foreach, purrr, ranger, UBL, xgboost
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.1.1
