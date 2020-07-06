@@ -4,8 +4,16 @@
 \alias{wf.RandomForest}
 \title{Workflow with Random Forest learning algorithm}
 \usage{
-wf.RandomForest(form, train, test, ntrees = 500, rstrategy = NULL,
-  rs.pars = list(), return.model = FALSE, ...)
+wf.RandomForest(
+  form,
+  train,
+  test,
+  ntrees = 500,
+  rstrategy = NULL,
+  rs.pars = list(),
+  return.model = FALSE,
+  ...
+)
 }
 \arguments{
 \item{form}{A model formula}

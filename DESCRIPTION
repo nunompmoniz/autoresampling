@@ -13,7 +13,7 @@ URL: https://github.com/nunompmoniz/autoresampling
 BugReports: https://github.com/nunompmoniz/autoresampling/issues
 License: GPL-3
 Depends: R (>= 2.10)
-Imports: grDevices, ECoL, entropy, infotheo, minerva, moments, mlbench, AUC, MLmetrics, Metrics, e1071, rpart, foreach, purrr, ranger, UBL, xgboost
+Imports: grDevices, ECoL, entropy, infotheo, minerva, moments, AUC, MLmetrics, Metrics, e1071, rpart, foreach, ranger, UBL, xgboost, mlbench
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.1

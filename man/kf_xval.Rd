@@ -4,8 +4,17 @@
 \alias{kf_xval}
 \title{k-fold cross validation}
 \usage{
-kf_xval(x, form, nfolds, FUN, shuffle.rows = TRUE,
-  average_results = FALSE, seedlock = FALSE, percTest = NULL, ...)
+kf_xval(
+  x,
+  form,
+  nfolds,
+  FUN,
+  shuffle.rows = TRUE,
+  average_results = FALSE,
+  seedlock = FALSE,
+  percTest = NULL,
+  ...
+)
 }
 \arguments{
 \item{x}{data: embedded time series}

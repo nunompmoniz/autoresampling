@@ -133,7 +133,7 @@ agg.reg <- NULL
 
 # External. Consult Github for the respective paper.
 # metamodel.class
-metamodel.class <- readRDS("~/Desktop/Academia/Manuscripts/2018 - AutoResampling Classification (PR)/AutoResampling/Results/metamodelATOMIC.rds")
+metamodel.class <- xgboost::xgb.load("metamodelATOMIC.model")
 
 ######################################################
 # - meta model for imbalanced regression tasks
