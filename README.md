@@ -33,4 +33,4 @@ library(autoresampling)
 References
 ----------
 
--   Nuno Moniz and Vítor Cerqueira (2020). "Automated Imbalanced Classification with Meta-learning". Pattern Recognition, Elsevier (submitted)
+-   Nuno Moniz and Vítor Cerqueira (2020). "Automated Imbalanced Classification with Meta-learning". Machine Learning, Springer (submitted)
