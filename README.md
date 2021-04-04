@@ -33,4 +33,4 @@ library(autoresampling)
 References
 ----------
 
--   Nuno Moniz and Vítor Cerqueira (2020). "Automated Imbalanced Classification with Meta-learning". Machine Learning, Springer (submitted)
+-   Nuno Moniz and Vítor Cerqueira (2021). "Automated Imbalanced Classification with Meta-learning". Expert Systems with Applications, Elsevier (accepted)
