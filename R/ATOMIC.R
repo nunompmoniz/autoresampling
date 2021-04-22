@@ -183,6 +183,7 @@ ATOMIC <- function(form, train, nmodels=20, metric="F1") {
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' library(mlbench)
 #'
 #' data(PimaIndiansDiabetes)
@@ -194,9 +195,10 @@ ATOMIC <- function(form, train, nmodels=20, metric="F1") {
 #'
 #' form <- diabetes ~ .
 #'
-#' atomic.m <- ATOMIC(form,PimaIndiansDiabetes)
+#' atomic.m <- ATOMIC(form,train)
 #'
 #' preds <- predict(atomic.m, test)
+#' }
 #'
 predict.atomic <- function(object, test, ...) {
 
