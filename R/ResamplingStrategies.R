@@ -125,7 +125,7 @@ rs.ImpSamp <- function(form, train, und.perc = 1, ove.perc = 0, ...) {
 
   lst <- list(und.perc, (1+ove.perc)); names(lst) <- nms
 
-  new.ds <- UBL::ImpSampClassif(form = form, dat = train, C.perc = lst, ...)
+  new.ds <- UBL::GaussNoiseClassif(form = form, dat = train, C.perc = lst, ...)
 
   new.ds
 
