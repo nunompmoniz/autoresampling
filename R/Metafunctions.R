@@ -52,21 +52,24 @@ statsCor_NumAttrs <- function(ds, tgt) {
   numattrs <- as.numeric(which(sapply(ds,is.numeric)))
   numattrs <- setdiff(numattrs,tgt)
 
-  v_cor <- c()
-
-  if(length(numattrs)>1) {
-
-    for(i in 1:(length(numattrs)-1)) {
-
-      for(j in 2:length(numattrs)) {
-
-        v_cor <- c(v_cor,stats::cor(ds[,numattrs[i]],ds[,numattrs[j]]))
-
-      }
-
-    }
-
-  }
+  # create 
+  tmp <- stats::cor(ds[,numattrs])
+  v_cor <- tmp[upper.tri(tmp, diag = FALSE)]
+ # v_cor <- c()
+#
+ # if(length(numattrs)>1) {
+#
+ #   for(i in 1:(length(numattrs)-1)) {
+#
+ #     for(j in 2:length(numattrs)) {
+#
+ #       v_cor <- c(v_cor,stats::cor(ds[,numattrs[i]],ds[,numattrs[j]]))
+#
+ #     }
+#
+ #   }
+#
+ # }
 
   v_cor <- v_cor[!is.na(v_cor)]
 
