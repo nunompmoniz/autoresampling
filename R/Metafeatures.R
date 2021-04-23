@@ -91,7 +91,7 @@ getMetaFeatures <- function(ds,form,numCores=1) {
   mOverlap <- measOverlap(ds,tgt)
 
   # Percentual Difference between Classes
-  pdc <- ClassPD(ds,form)
+  pdc <- ClassPD(ds,form,numCores=numCores)
 
   landmarkers.tree1 <- landmarker.tree(ds, form, maxdepth = 1)
   landmarkers.tree2 <- landmarker.tree(ds, form, maxdepth = 2)
