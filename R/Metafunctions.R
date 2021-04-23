@@ -52,7 +52,7 @@ statsCor_NumAttrs <- function(ds, tgt) {
   numattrs <- as.numeric(which(sapply(ds,is.numeric)))
   numattrs <- setdiff(numattrs,tgt)
 
-  # create 
+  # create
   tmp <- stats::cor(ds[,numattrs])
   v_cor <- tmp[upper.tri(tmp, diag = FALSE)]
  # v_cor <- c()
@@ -340,6 +340,7 @@ statsCoV_NumAttrs <- function(ds,tgt) {
 #'
 #' @param ds A data set
 #' @param tgt The index of the target variable
+#' @param numCores number of cores for parallel computing
 #'
 #' @return A vector with the minimum, maximum, mean, standard deviation and variance of numerical attributes' MIC score,
 #' and a vector with the cardinality of values after binning (10 bins)
@@ -349,9 +350,9 @@ statsALL_NumAttrs <- function(ds,tgt,numCores=1) {
 
   numattrs <- as.numeric(which(sapply(ds,is.numeric)))
   numattrs <- setdiff(numattrs,tgt)
-  
+
   tmp <- minerva::mine(x=as.matrix(ds[,numattrs]),n.cores=numCores)
-  
+
   #MIC
   v_mic <- tmp$MIC[upper.tri(tmp$MIC, diag = FALSE)]
   v_mic <- v_mic[!is.na(v_mic)]
@@ -396,7 +397,7 @@ statsALL_NumAttrs <- function(ds,tgt,numCores=1) {
   } else { histmev <- c(rep(NA,10))}
   names(histmev) <- c("bin1","bin2","bin3","bin4","bin5","bin6","bin7","bin8","bin9","bin10")
   out.mev = cbind(min=minmev, max=maxmev, avg=avgmev, sd=sdmev, var=varmev, t(histmev))
- 
+
   #MCN
   v_mcn <- tmp$MCN[upper.tri(tmp$MCN, diag = FALSE)]
   v_mcn <- v_mcn[!is.na(v_mcn)]
@@ -454,7 +455,7 @@ statsMIC_NumAttrs <- function(ds,tgt) {
 
   numattrs <- as.numeric(which(sapply(ds,is.numeric)))
   numattrs <- setdiff(numattrs,tgt)
-  
+
   v_mic <- c()
 
   if(length(numattrs)>1) {
@@ -785,7 +786,7 @@ statsMuI <- function(ds,tgt) {
   #create a discretize version of ds
   tmpM <- infotheo::discretize(ds[,attrs],nbins=10)
   tmp.res <-  infotheo::mutinformation(tmpM)
-  
+
   v_mui <- tmp.res[upper.tri(tmp.res, diag = FALSE)]
 
   #if(length(attrs)>0) {
@@ -854,7 +855,7 @@ measOverlap <- function(ds,tgt) {
 #'
 #' @param ds A data set
 #' @param form A model formula
-#' @param results A list of precomputed results
+#' @param numCores number of cores for parallel computing
 #'
 #' @return A vector of numerical values
 #'
@@ -862,7 +863,7 @@ ClassPD <- function(ds, form,numCores=1) {
 
   nms <- classNames(form = form, ds = ds)
   tgt <- which(colnames(ds)==as.character(form[[2]]))
-  
+
     # IQR
     diffIQR <- percDiff(statsIQR_NumAttrs(ds[ds[,tgt]==nms[2],],tgt), statsIQR_NumAttrs(ds[ds[,tgt]==nms[1],],tgt))[,1:5]
 
@@ -884,7 +885,7 @@ ClassPD <- function(ds, form,numCores=1) {
   # run the Minerva functions only once per class
   tmp1 <- statsALL_NumAttrs(ds[ds[,tgt]==nms[1],],tgt,numCores=numCores)
   tmp2 <- statsALL_NumAttrs(ds[ds[,tgt]==nms[2],],tgt,numCores=numCores)
-  
+
     # Maximal Information Coefficient (MIC)
     diffMICNumAttrs <- percDiff(tmp2$MIC, tmp1$MIC)[,1:5]
 
@@ -905,8 +906,8 @@ ClassPD <- function(ds, form,numCores=1) {
 
     # Mutual Information of Attributes
     diffMIN <- percDiff(statsMuI(ds[ds[,tgt]==nms[2],],tgt), statsMuI(ds[ds[,tgt]==nms[1],],tgt))[,1:5]
-  
-  
+
+
   data.frame(diffIQR=t(diffIQR),diffCoefVar=t(diffCoefVar),diffCorNumAttrs=t(diffCorNumAttrs),diffGKurNumAttrs=t(diffGKurNumAttrs),
              diffPKurNumAttrs=t(diffPKurNumAttrs),diffSkewNumAttrs=t(diffSkewNumAttrs),diffMICNumAttrs=t(diffMICNumAttrs),
              diffMASNumAttrs=t(diffMASNumAttrs),diffMEVNumAttrs=t(diffMEVNumAttrs),diffMCNNumAttrs=t(diffMCNNumAttrs),

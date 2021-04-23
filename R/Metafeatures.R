@@ -4,6 +4,7 @@
 #'
 #' @param ds A data set
 #' @param form A model formula
+#' @param numCores number of cores for parallel computing
 #'
 #' @return A vector of meta-features describing the data set
 #' @export
@@ -65,7 +66,7 @@ getMetaFeatures <- function(ds,form,numCores=1) {
 
   # Do a single call to Minerva
   tmp <- statsALL_NumAttrs(ds,tgt,numCores=numCores)
-  
+
   # Maximal Information Coefficient (MIC)
   #statsMICNumAttrs <- statsMIC_NumAttrs(ds,tgt)
   statsMICNumAttrs <- tmp$MIC

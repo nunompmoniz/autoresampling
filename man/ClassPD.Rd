@@ -5,12 +5,14 @@
 \title{16. Percentual Difference by Class (PDC)
 F1, F2 and F3}
 \usage{
-ClassPD(ds, form)
+ClassPD(ds, form, numCores = 1)
 }
 \arguments{
 \item{ds}{A data set}
 
 \item{form}{A model formula}
+
+\item{numCores}{number of cores for parallel computing}
 }
 \value{
 A vector of numerical values

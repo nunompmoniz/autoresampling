@@ -44,8 +44,8 @@ ATOMIC <- function(form, train, nmodels=20, metric="F1", numCores=1, ...) {
   select.wfs <- metadb[order(ranks),1:5]; select.wfs$RStrategy <- as.character(select.wfs$RStrategy)
 
   #create parellel computing structure
-  registerDoParallel(numCores)
-  
+  doParallel::registerDoParallel(numCores)
+
   nf <- NULL
   cv.eval <- foreach::foreach(nf=1:nmodels, .combine=cbind) %do% {
 
@@ -111,7 +111,7 @@ ATOMIC <- function(form, train, nmodels=20, metric="F1", numCores=1, ...) {
 
   }
 
-  cv.res <- colMeans(cv.eval)
+  cv.res <- colMeans(cv.eval); if(any(is.na(cv.res))) cv.res[is.na(cv.res)] <- 0
   best <- select.wfs[which(cv.res==max(cv.res))[1],]
 
   best.model <- NA
