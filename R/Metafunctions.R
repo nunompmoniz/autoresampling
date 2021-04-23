@@ -52,21 +52,24 @@ statsCor_NumAttrs <- function(ds, tgt) {
   numattrs <- as.numeric(which(sapply(ds,is.numeric)))
   numattrs <- setdiff(numattrs,tgt)
 
-  v_cor <- c()
-
-  if(length(numattrs)>1) {
-
-    for(i in 1:(length(numattrs)-1)) {
-
-      for(j in 2:length(numattrs)) {
-
-        v_cor <- c(v_cor,stats::cor(ds[,numattrs[i]],ds[,numattrs[j]]))
-
-      }
-
-    }
-
-  }
+  # create 
+  tmp <- stats::cor(ds[,numattrs])
+  v_cor <- tmp[upper.tri(tmp, diag = FALSE)]
+ # v_cor <- c()
+#
+ # if(length(numattrs)>1) {
+#
+ #   for(i in 1:(length(numattrs)-1)) {
+#
+ #     for(j in 2:length(numattrs)) {
+#
+ #       v_cor <- c(v_cor,stats::cor(ds[,numattrs[i]],ds[,numattrs[j]]))
+#
+ #     }
+#
+ #   }
+#
+ # }
 
   v_cor <- v_cor[!is.na(v_cor)]
 
@@ -329,6 +332,111 @@ statsCoV_NumAttrs <- function(ds,tgt) {
 
 ########################################################
 #'
+#' 8-12. Eval all the following metrics on Numeric Attributes
+#' min, max, mean, sd, var, hist
+#'
+########################################################
+
+#'
+#' @param ds A data set
+#' @param tgt The index of the target variable
+#'
+#' @return A vector with the minimum, maximum, mean, standard deviation and variance of numerical attributes' MIC score,
+#' and a vector with the cardinality of values after binning (10 bins)
+#'
+
+statsALL_NumAttrs <- function(ds,tgt,numCores=1) {
+
+  numattrs <- as.numeric(which(sapply(ds,is.numeric)))
+  numattrs <- setdiff(numattrs,tgt)
+  
+  tmp <- minerva::mine(x=as.matrix(ds[,numattrs]),n.cores=numCores)
+  
+  #MIC
+  v_mic <- tmp$MIC[upper.tri(tmp$MIC, diag = FALSE)]
+  v_mic <- v_mic[!is.na(v_mic)]
+  minmic <- ifelse(length(v_mic)==0,NA,base::min(v_mic,na.rm=TRUE))
+  maxmic <- ifelse(length(v_mic)==0,NA,base::max(v_mic,na.rm=TRUE))
+  avgmic <- ifelse(length(v_mic)==0,NA,mean(v_mic,na.rm=TRUE))
+  sdmic <- ifelse(length(v_mic)==0,NA,stats::sd(v_mic,na.rm=TRUE))
+  varmic <- ifelse(length(v_mic)==0,NA,stats::var(v_mic,na.rm=TRUE))
+  histmic <- c()
+  if(length(v_mic)>1 && !all(v_mic == v_mic[1])) {
+    histmic <- as.vector(graphics::hist(v_mic,breaks=seq(from=base::min(v_mic), to=base::max(v_mic), by=(base::max(v_mic)-base::min(v_mic))/10), plot = FALSE)$counts)
+  } else { histmic <- c(rep(NA,10))}
+  names(histmic) <- c("bin1","bin2","bin3","bin4","bin5","bin6","bin7","bin8","bin9","bin10")
+  out.mic = cbind(min=minmic, max=maxmic, avg=avgmic, sd=sdmic, var=varmic, t(histmic))
+
+  #MAS
+  v_mas <- tmp$MAS[upper.tri(tmp$MAS, diag = FALSE)]
+  v_mas <- v_mas[!is.na(v_mas)]
+  minmas <- ifelse(length(v_mas)==0,NA,base::min(v_mas,na.rm=TRUE))
+  maxmas <- ifelse(length(v_mas)==0,NA,base::max(v_mas,na.rm=TRUE))
+  avgmas <- ifelse(length(v_mas)==0,NA,mean(v_mas,na.rm=TRUE))
+  sdmas <- ifelse(length(v_mas)==0,NA,stats::sd(v_mas,na.rm=TRUE))
+  varmas <- ifelse(length(v_mas)==0,NA,stats::var(v_mas,na.rm=TRUE))
+  histmas <- c()
+  if(length(v_mas)>1 && !all(v_mas == v_mas[1])) {
+    histmas <- as.vector(graphics::hist(v_mas,breaks=seq(from=base::min(v_mas), to=base::max(v_mas), by=(base::max(v_mas)-base::min(v_mas))/10), plot = FALSE)$counts)
+  } else { histmas <- c(rep(NA,10))}
+  names(histmas) <- c("bin1","bin2","bin3","bin4","bin5","bin6","bin7","bin8","bin9","bin10")
+  out.mas = cbind(min=minmas, max=maxmas, avg=avgmas, sd=sdmas, var=varmas, t(histmas))
+
+  #MEV
+  v_mev <- tmp$MEV[upper.tri(tmp$MEV, diag = FALSE)]
+  v_mev <- v_mev[!is.na(v_mev)]
+  minmev <- ifelse(length(v_mev)==0,NA,base::min(v_mev,na.rm=TRUE))
+  maxmev <- ifelse(length(v_mev)==0,NA,base::max(v_mev,na.rm=TRUE))
+  avgmev <- ifelse(length(v_mev)==0,NA,mean(v_mev,na.rm=TRUE))
+  sdmev <- ifelse(length(v_mev)==0,NA,stats::sd(v_mev,na.rm=TRUE))
+  varmev <- ifelse(length(v_mev)==0,NA,stats::var(v_mev,na.rm=TRUE))
+  histmev <- c()
+  if(length(v_mev)>1 && !all(v_mev == v_mev[1])) {
+    histmev <- as.vector(graphics::hist(v_mev,breaks=seq(from=base::min(v_mev), to=base::max(v_mev), by=(base::max(v_mev)-base::min(v_mev))/10), plot = FALSE)$counts)
+  } else { histmev <- c(rep(NA,10))}
+  names(histmev) <- c("bin1","bin2","bin3","bin4","bin5","bin6","bin7","bin8","bin9","bin10")
+  out.mev = cbind(min=minmev, max=maxmev, avg=avgmev, sd=sdmev, var=varmev, t(histmev))
+ 
+  #MCN
+  v_mcn <- tmp$MCN[upper.tri(tmp$MCN, diag = FALSE)]
+  v_mcn <- v_mcn[!is.na(v_mcn)]
+
+  minmcn <- ifelse(length(v_mcn)==0,NA,base::min(v_mcn,na.rm=TRUE))
+  maxmcn <- ifelse(length(v_mcn)==0,NA,base::max(v_mcn,na.rm=TRUE))
+  avgmcn <- ifelse(length(v_mcn)==0,NA,mean(v_mcn,na.rm=TRUE))
+  sdmcn <- ifelse(length(v_mcn)==0,NA,stats::sd(v_mcn,na.rm=TRUE))
+  varmcn <- ifelse(length(v_mcn)==0,NA,stats::var(v_mcn,na.rm=TRUE))
+  histmcn <- c()
+  if(length(v_mcn)>1 && !all(v_mcn == v_mcn[1])) {
+    histmcn <- as.vector(graphics::hist(v_mcn,breaks=seq(from=base::min(v_mcn), to=base::max(v_mcn), by=(base::max(v_mcn)-base::min(v_mcn))/10), plot = FALSE)$counts)
+  } else { histmcn <- c(rep(NA,10))}
+  names(histmcn) <- c("bin1","bin2","bin3","bin4","bin5","bin6","bin7","bin8","bin9","bin10")
+  out.mcn = cbind(min=minmcn, max=maxmcn, avg=avgmcn, sd=sdmcn, var=varmcn, t(histmcn))
+
+  #TIC
+  v_tic <- tmp$TIC[upper.tri(tmp$TIC, diag = FALSE)]
+  v_tic <- v_tic[!is.na(v_tic)]
+
+  mintic <- ifelse(length(v_tic)==0,NA,base::min(v_tic,na.rm=TRUE))
+  maxtic <- ifelse(length(v_tic)==0,NA,base::max(v_tic,na.rm=TRUE))
+  avgtic <- ifelse(length(v_tic)==0,NA,mean(v_tic,na.rm=TRUE))
+  sdtic <- ifelse(length(v_tic)==0,NA,stats::sd(v_tic,na.rm=TRUE))
+  vartic <- ifelse(length(v_tic)==0,NA,stats::var(v_tic,na.rm=TRUE))
+
+  histtic <- c()
+  if(length(v_tic)>1 && !all(v_tic == v_tic[1])) {
+    histtic <- as.vector(graphics::hist(v_tic,breaks=seq(from=base::min(v_tic), to=base::max(v_tic), by=(base::max(v_tic)-base::min(v_tic))/10), plot = FALSE)$counts)
+  } else { histtic <- c(rep(NA,10))}
+
+  names(histtic) <- c("bin1","bin2","bin3","bin4","bin5","bin6","bin7","bin8","bin9","bin10")
+
+  out.tic = cbind(min=mintic, max=maxtic, avg=avgtic, sd=sdtic, var=vartic, t(histtic))
+
+  return(list('MIC' = out.mic, 'MAS' = out.mas, 'MEV' = out.mev, 'MCN' = out.mcn, 'TIC' = out.tic))
+}
+
+########################################################
+#'
 #' 8. Maximal Information Coefficient (MIC) between Numeric Attributes
 #' min, max, mean, sd, var, hist
 #'
@@ -346,7 +454,7 @@ statsMIC_NumAttrs <- function(ds,tgt) {
 
   numattrs <- as.numeric(which(sapply(ds,is.numeric)))
   numattrs <- setdiff(numattrs,tgt)
-
+  
   v_mic <- c()
 
   if(length(numattrs)>1) {
@@ -674,21 +782,25 @@ statsMuI <- function(ds,tgt) {
   attrs <- 1:ncol(ds)
   attrs <- setdiff(attrs,tgt)
 
-  v_mui <- c()
+  #create a discretize version of ds
+  tmpM <- infotheo::discretize(ds[,attrs],nbins=10)
+  tmp.res <-  infotheo::mutinformation(tmpM)
+  
+  v_mui <- tmp.res[upper.tri(tmp.res, diag = FALSE)]
 
-  if(length(attrs)>0) {
-
-    for(i in 1:(length(attrs)-1)) {
-
-      for(j in 2:length(attrs)) {
-
-        v_mui <- c(v_mui,infotheo::mutinformation(infotheo::discretize(ds[,i],nbins=10),infotheo::discretize(ds[,j],nbins=10)))
-
-      }
-
-    }
-
-  }
+  #if(length(attrs)>0) {
+#
+  #  for(i in 1:(length(attrs)-1)) {
+#
+ #     for(j in 2:length(attrs)) {
+#
+ #       v_mui <- c(v_mui,infotheo::mutinformation(infotheo::discretize(ds[,i:j],nbins=10),infotheo::discretize(ds[,j],nbins=10)))
+#
+ #     }
+#
+ #   }
+#
+ # }
 
   v_mui <- v_mui[!is.na(v_mui)]
   minmui <- ifelse(length(v_mui)==0,NA,base::min(v_mui,na.rm=TRUE))
@@ -742,53 +854,59 @@ measOverlap <- function(ds,tgt) {
 #'
 #' @param ds A data set
 #' @param form A model formula
+#' @param results A list of precomputed results
 #'
 #' @return A vector of numerical values
 #'
-ClassPD <- function(ds, form) {
+ClassPD <- function(ds, form,numCores=1) {
 
   nms <- classNames(form = form, ds = ds)
   tgt <- which(colnames(ds)==as.character(form[[2]]))
+  
+    # IQR
+    diffIQR <- percDiff(statsIQR_NumAttrs(ds[ds[,tgt]==nms[2],],tgt), statsIQR_NumAttrs(ds[ds[,tgt]==nms[1],],tgt))[,1:5]
 
-  # IQR
-  diffIQR <- percDiff(statsIQR_NumAttrs(ds[ds[,tgt]==nms[2],],tgt), statsIQR_NumAttrs(ds[ds[,tgt]==nms[1],],tgt))[,1:5]
+    # Coefficient of Variation
+    diffCoefVar <- percDiff(statsCoV_NumAttrs(ds[ds[,tgt]==nms[2],],tgt), statsCoV_NumAttrs(ds[ds[,tgt]==nms[1],],tgt))[,1:5]
 
-  # Coefficient of Variation
-  diffCoefVar <- percDiff(statsCoV_NumAttrs(ds[ds[,tgt]==nms[2],],tgt), statsCoV_NumAttrs(ds[ds[,tgt]==nms[1],],tgt))[,1:5]
+    # Correlation between Numerical Attributes
+    diffCorNumAttrs <- percDiff(statsCor_NumAttrs(ds[ds[,tgt]==nms[2],],tgt), statsCor_NumAttrs(ds[ds[,tgt]==nms[1],],tgt))[,1:5]
 
-  # Correlation between Numerical Attributes
-  diffCorNumAttrs <- percDiff(statsCor_NumAttrs(ds[ds[,tgt]==nms[2],],tgt), statsCor_NumAttrs(ds[ds[,tgt]==nms[1],],tgt))[,1:5]
+    # Geary's Kurtosis of Numerical Attributes
+    diffGKurNumAttrs <- percDiff(statsGKur_NumAttrs(ds[ds[,tgt]==nms[2],],tgt), statsGKur_NumAttrs(ds[ds[,tgt]==nms[1],],tgt))[,1:5]
 
-  # Geary's Kurtosis of Numerical Attributes
-  diffGKurNumAttrs <- percDiff(statsGKur_NumAttrs(ds[ds[,tgt]==nms[2],],tgt), statsGKur_NumAttrs(ds[ds[,tgt]==nms[1],],tgt))[,1:5]
+    # Pearson's Kurtosis of Numerical Attributes
+    diffPKurNumAttrs <- percDiff(statsPKur_NumAttrs(ds[ds[,tgt]==nms[2],],tgt), statsPKur_NumAttrs(ds[ds[,tgt]==nms[1],],tgt))[,1:5]
 
-  # Pearson's Kurtosis of Numerical Attributes
-  diffPKurNumAttrs <- percDiff(statsPKur_NumAttrs(ds[ds[,tgt]==nms[2],],tgt), statsPKur_NumAttrs(ds[ds[,tgt]==nms[1],],tgt))[,1:5]
+    # Skewness of Numerical Attributes
+    diffSkewNumAttrs <- percDiff(statsSkew_NumAttrs(ds[ds[,tgt]==nms[2],],tgt), statsSkew_NumAttrs(ds[ds[,tgt]==nms[1],],tgt))[,1:5]
 
-  # Skewness of Numerical Attributes
-  diffSkewNumAttrs <- percDiff(statsSkew_NumAttrs(ds[ds[,tgt]==nms[2],],tgt), statsSkew_NumAttrs(ds[ds[,tgt]==nms[1],],tgt))[,1:5]
+  # run the Minerva functions only once per class
+  tmp1 <- statsALL_NumAttrs(ds[ds[,tgt]==nms[1],],tgt,numCores=numCores)
+  tmp2 <- statsALL_NumAttrs(ds[ds[,tgt]==nms[2],],tgt,numCores=numCores)
+  
+    # Maximal Information Coefficient (MIC)
+    diffMICNumAttrs <- percDiff(tmp2$MIC, tmp1$MIC)[,1:5]
 
-  # Maximal Information Coefficient (MIC)
-  diffMICNumAttrs <- percDiff(statsMIC_NumAttrs(ds[ds[,tgt]==nms[2],],tgt), statsMIC_NumAttrs(ds[ds[,tgt]==nms[1],],tgt))[,1:5]
+    # Maximum Asymmetry Score (MAS)
+    diffMASNumAttrs <- percDiff(tmp2$MAS, tmp1$MAS)[,1:5]
 
-  # Maximum Asymmetry Score (MAS)
-  diffMASNumAttrs <- percDiff(statsMAS_NumAttrs(ds[ds[,tgt]==nms[2],],tgt), statsMAS_NumAttrs(ds[ds[,tgt]==nms[1],],tgt))[,1:5]
+    # Maximum Edge Value (MEV)
+    diffMEVNumAttrs <- percDiff(tmp2$MEV, tmp1$MEV)[,1:5]
 
-  # Maximum Edge Value (MEV)
-  diffMEVNumAttrs <- percDiff(statsMEV_NumAttrs(ds[ds[,tgt]==nms[2],],tgt), statsMEV_NumAttrs(ds[ds[,tgt]==nms[1],],tgt))[,1:5]
+    # Minimum Cell Number (MCN)
+    diffMCNNumAttrs <- percDiff(tmp2$MCN, tmp1$MCN)[,1:5]
 
-  # Minimum Cell Number (MCN)
-  diffMCNNumAttrs <- percDiff(statsMCN_NumAttrs(ds[ds[,tgt]==nms[2],],tgt), statsMCN_NumAttrs(ds[ds[,tgt]==nms[1],],tgt))[,1:5]
+    # Total Information Coefficient (TIC)
+    diffTICNumAttrs <- percDiff(tmp2$TIC, tmp1$TIC)[,1:5]
 
-  # Total Information Coefficient (TIC)
-  diffTICNumAttrs <- percDiff(statsTIC_NumAttrs(ds[ds[,tgt]==nms[2],],tgt), statsTIC_NumAttrs(ds[ds[,tgt]==nms[1],],tgt))[,1:5]
+    # Entropy
+    diffEntropy <- percDiff(statsEnt(ds[ds[,tgt]==nms[2],],tgt), statsEnt(ds[ds[,tgt]==nms[1],],tgt))[,1:5]
 
-  # Entropy
-  diffEntropy <- percDiff(statsEnt(ds[ds[,tgt]==nms[2],],tgt), statsEnt(ds[ds[,tgt]==nms[1],],tgt))[,1:5]
-
-  # Mutual Information of Attributes
-  diffMIN <- percDiff(statsMuI(ds[ds[,tgt]==nms[2],],tgt), statsMuI(ds[ds[,tgt]==nms[1],],tgt))[,1:5]
-
+    # Mutual Information of Attributes
+    diffMIN <- percDiff(statsMuI(ds[ds[,tgt]==nms[2],],tgt), statsMuI(ds[ds[,tgt]==nms[1],],tgt))[,1:5]
+  
+  
   data.frame(diffIQR=t(diffIQR),diffCoefVar=t(diffCoefVar),diffCorNumAttrs=t(diffCorNumAttrs),diffGKurNumAttrs=t(diffGKurNumAttrs),
              diffPKurNumAttrs=t(diffPKurNumAttrs),diffSkewNumAttrs=t(diffSkewNumAttrs),diffMICNumAttrs=t(diffMICNumAttrs),
              diffMASNumAttrs=t(diffMASNumAttrs),diffMEVNumAttrs=t(diffMEVNumAttrs),diffMCNNumAttrs=t(diffMCNNumAttrs),

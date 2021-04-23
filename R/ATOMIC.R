@@ -6,6 +6,7 @@
 #' @param train Training data
 #' @param nmodels Number of models to consider. Default is 20. Only such number of top-k models (based on internal validation performance with cross-validation methodology) will be tested.
 #' @param metric Evaluation metric used for assessing the optimisation of predictive performance. Default is F1-Score
+#' @param numCores number of cores for parallel computing
 #' @param ... Other parameters
 #'
 #' @return A predictive model containing the workflow (algorithm+resampling strategy) that are estimated to optimise the generalisation error.
@@ -25,9 +26,9 @@
 #' atomic.m <- ATOMIC(form,PimaIndiansDiabetes)
 #'
 #' }
-ATOMIC <- function(form, train, nmodels=20, metric="F1", ...) {
+ATOMIC <- function(form, train, nmodels=20, metric="F1", numCores=1, ...) {
 
-  metafeats <- getMetaFeatures(train, form)
+  metafeats <- getMetaFeatures(train, form,numCores=numCores)
   wfconf <- sysdata$wf.config.class
 
   metadb <- cbind(wfconf,metafeats)
@@ -42,6 +43,9 @@ ATOMIC <- function(form, train, nmodels=20, metric="F1", ...) {
 
   select.wfs <- metadb[order(ranks),1:5]; select.wfs$RStrategy <- as.character(select.wfs$RStrategy)
 
+  #create parellel computing structure
+  registerDoParallel(numCores)
+  
   nf <- NULL
   cv.eval <- foreach::foreach(nf=1:nmodels, .combine=cbind) %do% {
 
