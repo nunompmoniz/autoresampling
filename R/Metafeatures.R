@@ -4,6 +4,7 @@
 #'
 #' @param ds A data set
 #' @param form A model formula
+#' @param numCores number of cores for parallel computing
 #'
 #' @return A vector of meta-features describing the data set
 #' @export
@@ -21,7 +22,7 @@
 #'
 #' }
 #'
-getMetaFeatures <- function(ds,form) {
+getMetaFeatures <- function(ds,form,numCores=1) {
 
   tgt <- which(colnames(ds)==as.character(form[[2]]))
   nms <- classNames(form, ds)
@@ -63,21 +64,24 @@ getMetaFeatures <- function(ds,form) {
   # Skewness of Numerical Attributes
   statsSkewNumAttrs <- statsSkew_NumAttrs(ds,tgt)
 
+  # Do a single call to Minerva
+  tmp <- statsALL_NumAttrs(ds,tgt,numCores=numCores)
+
   # Maximal Information Coefficient (MIC)
-  statsMICNumAttrs <- statsMIC_NumAttrs(ds,tgt)
-
+  #statsMICNumAttrs <- statsMIC_NumAttrs(ds,tgt)
+  statsMICNumAttrs <- tmp$MIC
   # Maximum Asymmetry Score (MAS)
-  statsMASNumAttrs <- statsMAS_NumAttrs(ds,tgt)
-
+  #statsMASNumAttrs <- statsMAS_NumAttrs(ds,tgt)
+  statsMASNumAttrs <- tmp$MAS
   # Maximum Edge Value (MEV)
-  statsMEVNumAttrs <- statsMEV_NumAttrs(ds,tgt)
-
+  #statsMEVNumAttrs <- statsMEV_NumAttrs(ds,tgt)
+  statsMEVNumAttrs <- tmp$MEV
   # Minimum Cell Number (MCN)
-  statsMCNNumAttrs <- statsMCN_NumAttrs(ds,tgt)
-
+  #statsMCNNumAttrs <- statsMCN_NumAttrs(ds,tgt)
+  statsMCNNumAttrs <- tmp$MCN
   # Total Information Coefficient (TIC)
-  statsTICNumAttrs <- statsTIC_NumAttrs(ds,tgt)
-
+  #statsTICNumAttrs <- statsTIC_NumAttrs(ds,tgt)
+  statsTICNumAttrs <- tmp$TIC
   # Entropy
   statsEntropy <- statsEnt(ds,tgt)
 
@@ -88,7 +92,7 @@ getMetaFeatures <- function(ds,form) {
   mOverlap <- measOverlap(ds,tgt)
 
   # Percentual Difference between Classes
-  pdc <- ClassPD(ds,form)
+  pdc <- ClassPD(ds,form,numCores=numCores)
 
   landmarkers.tree1 <- landmarker.tree(ds, form, maxdepth = 1)
   landmarkers.tree2 <- landmarker.tree(ds, form, maxdepth = 2)
