@@ -28,7 +28,7 @@
 #' }
 ATOMIC <- function(form, train, nmodels=20, metric="F1", numCores=1, ...) {
 
-  metafeats <- getMetaFeatures(train, form)
+  metafeats <- getMetaFeatures(train, form,numCores=numCores)
   wfconf <- sysdata$wf.config.class
 
   metadb <- cbind(wfconf,metafeats)
