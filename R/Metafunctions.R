@@ -854,53 +854,59 @@ measOverlap <- function(ds,tgt) {
 #'
 #' @param ds A data set
 #' @param form A model formula
+#' @param results A list of precomputed results
 #'
 #' @return A vector of numerical values
 #'
-ClassPD <- function(ds, form) {
+ClassPD <- function(ds, form,numCores=1) {
 
   nms <- classNames(form = form, ds = ds)
   tgt <- which(colnames(ds)==as.character(form[[2]]))
+  
+    # IQR
+    diffIQR <- percDiff(statsIQR_NumAttrs(ds[ds[,tgt]==nms[2],],tgt), statsIQR_NumAttrs(ds[ds[,tgt]==nms[1],],tgt))[,1:5]
 
-  # IQR
-  diffIQR <- percDiff(statsIQR_NumAttrs(ds[ds[,tgt]==nms[2],],tgt), statsIQR_NumAttrs(ds[ds[,tgt]==nms[1],],tgt))[,1:5]
+    # Coefficient of Variation
+    diffCoefVar <- percDiff(statsCoV_NumAttrs(ds[ds[,tgt]==nms[2],],tgt), statsCoV_NumAttrs(ds[ds[,tgt]==nms[1],],tgt))[,1:5]
 
-  # Coefficient of Variation
-  diffCoefVar <- percDiff(statsCoV_NumAttrs(ds[ds[,tgt]==nms[2],],tgt), statsCoV_NumAttrs(ds[ds[,tgt]==nms[1],],tgt))[,1:5]
+    # Correlation between Numerical Attributes
+    diffCorNumAttrs <- percDiff(statsCor_NumAttrs(ds[ds[,tgt]==nms[2],],tgt), statsCor_NumAttrs(ds[ds[,tgt]==nms[1],],tgt))[,1:5]
 
-  # Correlation between Numerical Attributes
-  diffCorNumAttrs <- percDiff(statsCor_NumAttrs(ds[ds[,tgt]==nms[2],],tgt), statsCor_NumAttrs(ds[ds[,tgt]==nms[1],],tgt))[,1:5]
+    # Geary's Kurtosis of Numerical Attributes
+    diffGKurNumAttrs <- percDiff(statsGKur_NumAttrs(ds[ds[,tgt]==nms[2],],tgt), statsGKur_NumAttrs(ds[ds[,tgt]==nms[1],],tgt))[,1:5]
 
-  # Geary's Kurtosis of Numerical Attributes
-  diffGKurNumAttrs <- percDiff(statsGKur_NumAttrs(ds[ds[,tgt]==nms[2],],tgt), statsGKur_NumAttrs(ds[ds[,tgt]==nms[1],],tgt))[,1:5]
+    # Pearson's Kurtosis of Numerical Attributes
+    diffPKurNumAttrs <- percDiff(statsPKur_NumAttrs(ds[ds[,tgt]==nms[2],],tgt), statsPKur_NumAttrs(ds[ds[,tgt]==nms[1],],tgt))[,1:5]
 
-  # Pearson's Kurtosis of Numerical Attributes
-  diffPKurNumAttrs <- percDiff(statsPKur_NumAttrs(ds[ds[,tgt]==nms[2],],tgt), statsPKur_NumAttrs(ds[ds[,tgt]==nms[1],],tgt))[,1:5]
+    # Skewness of Numerical Attributes
+    diffSkewNumAttrs <- percDiff(statsSkew_NumAttrs(ds[ds[,tgt]==nms[2],],tgt), statsSkew_NumAttrs(ds[ds[,tgt]==nms[1],],tgt))[,1:5]
 
-  # Skewness of Numerical Attributes
-  diffSkewNumAttrs <- percDiff(statsSkew_NumAttrs(ds[ds[,tgt]==nms[2],],tgt), statsSkew_NumAttrs(ds[ds[,tgt]==nms[1],],tgt))[,1:5]
+  # run the Minerva functions only once per class
+  tmp1 <- statsALL_NumAttrs(ds[ds[,tgt]==nms[1],],tgt,numCores=numCores)
+  tmp2 <- statsALL_NumAttrs(ds[ds[,tgt]==nms[2],],tgt,numCores=numCores)
+  
+    # Maximal Information Coefficient (MIC)
+    diffMICNumAttrs <- percDiff(tmp2$MIC, tmp1$MIC)[,1:5]
 
-  # Maximal Information Coefficient (MIC)
-  diffMICNumAttrs <- percDiff(statsMIC_NumAttrs(ds[ds[,tgt]==nms[2],],tgt), statsMIC_NumAttrs(ds[ds[,tgt]==nms[1],],tgt))[,1:5]
+    # Maximum Asymmetry Score (MAS)
+    diffMASNumAttrs <- percDiff(tmp2$MAS, tmp1$MAS)[,1:5]
 
-  # Maximum Asymmetry Score (MAS)
-  diffMASNumAttrs <- percDiff(statsMAS_NumAttrs(ds[ds[,tgt]==nms[2],],tgt), statsMAS_NumAttrs(ds[ds[,tgt]==nms[1],],tgt))[,1:5]
+    # Maximum Edge Value (MEV)
+    diffMEVNumAttrs <- percDiff(tmp2$MEV, tmp1$MEV)[,1:5]
 
-  # Maximum Edge Value (MEV)
-  diffMEVNumAttrs <- percDiff(statsMEV_NumAttrs(ds[ds[,tgt]==nms[2],],tgt), statsMEV_NumAttrs(ds[ds[,tgt]==nms[1],],tgt))[,1:5]
+    # Minimum Cell Number (MCN)
+    diffMCNNumAttrs <- percDiff(tmp2$MCN, tmp1$MCN)[,1:5]
 
-  # Minimum Cell Number (MCN)
-  diffMCNNumAttrs <- percDiff(statsMCN_NumAttrs(ds[ds[,tgt]==nms[2],],tgt), statsMCN_NumAttrs(ds[ds[,tgt]==nms[1],],tgt))[,1:5]
+    # Total Information Coefficient (TIC)
+    diffTICNumAttrs <- percDiff(tmp2$TIC, tmp1$TIC)[,1:5]
 
-  # Total Information Coefficient (TIC)
-  diffTICNumAttrs <- percDiff(statsTIC_NumAttrs(ds[ds[,tgt]==nms[2],],tgt), statsTIC_NumAttrs(ds[ds[,tgt]==nms[1],],tgt))[,1:5]
+    # Entropy
+    diffEntropy <- percDiff(statsEnt(ds[ds[,tgt]==nms[2],],tgt), statsEnt(ds[ds[,tgt]==nms[1],],tgt))[,1:5]
 
-  # Entropy
-  diffEntropy <- percDiff(statsEnt(ds[ds[,tgt]==nms[2],],tgt), statsEnt(ds[ds[,tgt]==nms[1],],tgt))[,1:5]
-
-  # Mutual Information of Attributes
-  diffMIN <- percDiff(statsMuI(ds[ds[,tgt]==nms[2],],tgt), statsMuI(ds[ds[,tgt]==nms[1],],tgt))[,1:5]
-
+    # Mutual Information of Attributes
+    diffMIN <- percDiff(statsMuI(ds[ds[,tgt]==nms[2],],tgt), statsMuI(ds[ds[,tgt]==nms[1],],tgt))[,1:5]
+  
+  
   data.frame(diffIQR=t(diffIQR),diffCoefVar=t(diffCoefVar),diffCorNumAttrs=t(diffCorNumAttrs),diffGKurNumAttrs=t(diffGKurNumAttrs),
              diffPKurNumAttrs=t(diffPKurNumAttrs),diffSkewNumAttrs=t(diffSkewNumAttrs),diffMICNumAttrs=t(diffMICNumAttrs),
              diffMASNumAttrs=t(diffMASNumAttrs),diffMEVNumAttrs=t(diffMEVNumAttrs),diffMCNNumAttrs=t(diffMCNNumAttrs),
