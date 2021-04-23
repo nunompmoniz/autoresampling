@@ -4,7 +4,7 @@
 \alias{ATOMIC}
 \title{Automated Imbalanced Classification}
 \usage{
-ATOMIC(form, train, nmodels = 20, metric = "F1")
+ATOMIC(form, train, nmodels = 20, metric = "F1", ...)
 }
 \arguments{
 \item{form}{A model formula}
@@ -14,6 +14,8 @@ ATOMIC(form, train, nmodels = 20, metric = "F1")
 \item{nmodels}{Number of models to consider. Default is 20. Only such number of top-k models (based on internal validation performance with cross-validation methodology) will be tested.}
 
 \item{metric}{Evaluation metric used for assessing the optimisation of predictive performance. Default is F1-Score}
+
+\item{...}{Other parameters}
 }
 \value{
 A predictive model containing the workflow (algorithm+resampling strategy) that are estimated to optimise the generalisation error.

@@ -20,6 +20,7 @@ A vector of predicted values
 Standard prediction method applied to an instance of the ATOMIC class
 }
 \examples{
+\dontrun{
 library(mlbench)
 
 data(PimaIndiansDiabetes)
@@ -31,8 +32,9 @@ test <- PimaIndiansDiabetes[-ind,]
 
 form <- diabetes ~ .
 
-atomic.m <- ATOMIC(form,PimaIndiansDiabetes)
+atomic.m <- ATOMIC(form,train)
 
 preds <- predict(atomic.m, test)
+}
 
 }

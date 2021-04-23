@@ -6,6 +6,7 @@
 #' @param train Training data
 #' @param nmodels Number of models to consider. Default is 20. Only such number of top-k models (based on internal validation performance with cross-validation methodology) will be tested.
 #' @param metric Evaluation metric used for assessing the optimisation of predictive performance. Default is F1-Score
+#' @param ... Other parameters
 #'
 #' @return A predictive model containing the workflow (algorithm+resampling strategy) that are estimated to optimise the generalisation error.
 #' @export
@@ -24,7 +25,7 @@
 #' atomic.m <- ATOMIC(form,PimaIndiansDiabetes)
 #'
 #' }
-ATOMIC <- function(form, train, nmodels=20, metric="F1") {
+ATOMIC <- function(form, train, nmodels=20, metric="F1", ...) {
 
   metafeats <- getMetaFeatures(train, form)
   wfconf <- sysdata$wf.config.class
@@ -53,46 +54,46 @@ ATOMIC <- function(form, train, nmodels=20, metric="F1") {
 
       if(m.select$RStrategy=="None") {
         res <- kf_xval(train, form, 10, wf.RandomForest, average_results=FALSE, seedlock=TRUE,
-                       rstrategy=NULL, rs.pars=NULL, percTest=NULL)[,metric]
+                       rstrategy=NULL, rs.pars=NULL, percTest=NULL, ...)[,metric]
       } else {
         res <- kf_xval(train, form, 10, wf.RandomForest, average_results=FALSE, seedlock=TRUE,
-                       rstrategy=m.select$RStrategy, rs.pars=NULL, percTest=NULL)[,metric]
+                       rstrategy=m.select$RStrategy, rs.pars=NULL, percTest=NULL, ...)[,metric]
       }
 
     } else if(m.select$RStrategy=="rs.ENN") {
 
       res <- kf_xval(train, form, 10, wf.RandomForest, average_results=FALSE, seedlock=TRUE,
-                     rstrategy=m.select$RStrategy, rs.pars=m.select[,c("k")], percTest=NULL, ntrees=m.select$ntrees)[,metric]
+                     rstrategy=m.select$RStrategy, rs.pars=m.select[,c("k")], percTest=NULL, ntrees=m.select$ntrees, ...)[,metric]
 
     } else if(m.select$RStrategy=="rs.RandUnder") {
 
       res <- kf_xval(train, form, 10, wf.RandomForest, average_results=FALSE, seedlock=TRUE,
-                     rstrategy=m.select$RStrategy, rs.pars=m.select[,c("und.perc")], percTest=NULL, ntrees=m.select$ntrees)[,metric]
+                     rstrategy=m.select$RStrategy, rs.pars=m.select[,c("und.perc")], percTest=NULL, ntrees=m.select$ntrees, ...)[,metric]
 
     } else if(m.select$RStrategy=="rs.RandOver") {
 
       res <- kf_xval(train, form, 10, wf.RandomForest, average_results=FALSE, seedlock=TRUE,
-                     rstrategy=m.select$RStrategy, rs.pars=m.select[,c("ove.perc")], percTest=NULL, ntrees=m.select$ntrees)[,metric]
+                     rstrategy=m.select$RStrategy, rs.pars=m.select[,c("ove.perc")], percTest=NULL, ntrees=m.select$ntrees, ...)[,metric]
 
     } else if(m.select$RStrategy=="rs.ImpSamp") {
 
       res <- kf_xval(train, form, 10, wf.RandomForest, average_results=FALSE, seedlock=TRUE,
-                     rstrategy=m.select$RStrategy, rs.pars=m.select[,c("und.perc","ove.perc")], percTest=NULL, ntrees=m.select$ntrees)[,metric]
+                     rstrategy=m.select$RStrategy, rs.pars=m.select[,c("und.perc","ove.perc")], percTest=NULL, ntrees=m.select$ntrees, ...)[,metric]
 
     } else if(m.select$RStrategy=="rs.SMOTE") {
 
       res <- kf_xval(train, form, 10, wf.RandomForest, average_results=FALSE, seedlock=TRUE,
-                     rstrategy=m.select$RStrategy, rs.pars=m.select[,c("und.perc","ove.perc")], percTest=NULL, ntrees=m.select$ntrees)[,metric]
+                     rstrategy=m.select$RStrategy, rs.pars=m.select[,c("und.perc","ove.perc")], percTest=NULL, ntrees=m.select$ntrees, ...)[,metric]
 
     } else if(m.select$RStrategy=="rs.TomekUnder") {
 
       res <- kf_xval(train, form, 10, wf.RandomForest, average_results=FALSE, seedlock=TRUE,
-                     rstrategy=m.select$RStrategy, rs.pars=NULL, percTest=NULL, ntrees=m.select$ntrees)[,metric]
+                     rstrategy=m.select$RStrategy, rs.pars=NULL, percTest=NULL, ntrees=m.select$ntrees, ...)[,metric]
 
     } else if(m.select$RStrategy=="None") {
 
       res <- kf_xval(train, form, 10, wf.RandomForest, average_results=FALSE, seedlock=TRUE,
-                     rstrategy=NULL, rs.pars=NULL, percTest=NULL, ntrees=m.select$ntrees)[,metric]
+                     rstrategy=NULL, rs.pars=NULL, percTest=NULL, ntrees=m.select$ntrees, ...)[,metric]
 
     } else {
 
@@ -115,53 +116,53 @@ ATOMIC <- function(form, train, nmodels=20, metric="F1") {
 
     if(best$RStrategy=="None") {
       best.model <- wf.RandomForest(form, train, NULL,
-                              rstrategy = NULL, rs.pars = NULL, return.model = TRUE)
+                              rstrategy = NULL, rs.pars = NULL, return.model = TRUE, ...)
     } else {
       best.model <- wf.RandomForest(form, train, NULL,
-                             rstrategy = best$RStrategy, rs.pars = NULL, return.model = TRUE)
+                             rstrategy = best$RStrategy, rs.pars = NULL, return.model = TRUE, ...)
     }
 
   } else if(best$RStrategy=="rs.ENN") {
 
     best.model <- wf.RandomForest(form, train, NULL,
                                   rstrategy = best$RStrategy, rs.pars = best[c("k")], ntrees = best$ntrees,
-                                  return.model = TRUE)
+                                  return.model = TRUE, ...)
 
   } else if(best$RStrategy=="rs.RandUnder") {
 
     best.model <- wf.RandomForest(form, train, NULL,
                                   rstrategy = best$RStrategy, rs.pars = best[c("und.perc")], ntrees = best$ntrees,
-                                  return.model = TRUE)
+                                  return.model = TRUE, ...)
 
   } else if(best$RStrategy=="rs.RandOver") {
 
     best.model <- wf.RandomForest(form, train, NULL,
                                   rstrategy = best$RStrategy, rs.pars = best[c("ove.perc")], ntrees = best$ntrees,
-                                  return.model = TRUE)
+                                  return.model = TRUE, ...)
 
   } else if(best$RStrategy=="rs.ImpSamp") {
 
     best.model <- wf.RandomForest(form, train, NULL,
                                   rstrategy = best$RStrategy, rs.pars = best[c("und.perc","ove.perc")], ntrees = best$ntrees,
-                                  return.model = TRUE)
+                                  return.model = TRUE, ...)
 
   } else if(best$RStrategy=="rs.SMOTE") {
 
     best.model <- wf.RandomForest(form, train, NULL,
                                   rstrategy = best$RStrategy, rs.pars = best[c("und.perc","ove.perc")], ntrees = best$ntrees,
-                                  return.model = TRUE)
+                                  return.model = TRUE, ...)
 
   } else if(best$RStrategy=="rs.TomekUnder") {
 
     best.model <- wf.RandomForest(form, train, NULL,
                                   rstrategy = best$RStrategy, rs.pars = NULL, ntrees = best$ntrees,
-                                  return.model = TRUE)
+                                  return.model = TRUE, ...)
 
   } else if(best$RStrategy=="None") {
 
     best.model <- wf.RandomForest(form, train, NULL,
                                   rstrategy = NULL, rs.pars = NULL, ntrees = best$ntrees,
-                                  return.model = TRUE)
+                                  return.model = TRUE, ...)
 
   }
 
@@ -179,7 +180,7 @@ ATOMIC <- function(form, train, nmodels=20, metric="F1") {
 #' @param ... Additional parameters
 #'
 #' @return A vector of predicted values
-#'
+#' @method predict atomic
 #' @export
 #'
 #' @examples
@@ -202,7 +203,7 @@ ATOMIC <- function(form, train, nmodels=20, metric="F1") {
 #'
 predict.atomic <- function(object, test, ...) {
 
-  preds <- stats::predict(object$best.model, test)$predictions
+  preds <- stats::predict(object$best.model, test, ...)$predictions
 
   preds
 
