@@ -43,9 +43,10 @@ ATOMIC <- function(form, train, nmodels=20, metric="F1", ...) {
   select.wfs <- metadb[order(ranks),1:5]; select.wfs$RStrategy <- as.character(select.wfs$RStrategy)
 
   nf <- NULL
+
   cv.eval <- foreach::foreach(nf=1:nmodels, .combine=cbind) %do% {
 
-    cat("Estimating the validation error of model ",nf, "/", nmodels, " ...\n")
+    cat("Estimating the validation error of model ",nf, "/", nmodels, " ...\n", file=stdout())
 
     res <- NULL
     m.select <- select.wfs[nf,]
@@ -107,7 +108,7 @@ ATOMIC <- function(form, train, nmodels=20, metric="F1", ...) {
 
   }
 
-  cv.res <- colMeans(cv.eval)
+  cv.res <- colMeans(cv.eval); if(any(is.na(cv.res))) cv.res[is.na(cv.res)] <- 0
   best <- select.wfs[which(cv.res==max(cv.res))[1],]
 
   best.model <- NA
