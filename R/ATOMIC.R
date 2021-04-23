@@ -28,6 +28,8 @@
 #' }
 ATOMIC <- function(form, train, nmodels=20, metric="F1", numCores=1, ...) {
 
+  if(!(metric %in% c("F1"))) return(cat("Metric not implemented yet. Let me know at https://github.com/nunompmoniz/autoresampling"))
+
   metafeats <- getMetaFeatures(train, form,numCores=numCores)
   wfconf <- sysdata$wf.config.class
 
