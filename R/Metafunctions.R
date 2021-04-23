@@ -332,6 +332,111 @@ statsCoV_NumAttrs <- function(ds,tgt) {
 
 ########################################################
 #'
+#' 8-12. Eval all the following metrics on Numeric Attributes
+#' min, max, mean, sd, var, hist
+#'
+########################################################
+
+#'
+#' @param ds A data set
+#' @param tgt The index of the target variable
+#'
+#' @return A vector with the minimum, maximum, mean, standard deviation and variance of numerical attributes' MIC score,
+#' and a vector with the cardinality of values after binning (10 bins)
+#'
+
+statsALL_NumAttrs <- function(ds,tgt,numCores=1) {
+
+  numattrs <- as.numeric(which(sapply(ds,is.numeric)))
+  numattrs <- setdiff(numattrs,tgt)
+  
+  tmp <- minerva::mine(x=as.matrix(ds[,numattrs]),n.cores=numCores)
+  
+  #MIC
+  v_mic <- tmp$MIC[upper.tri(tmp$MIC, diag = FALSE)]
+  v_mic <- v_mic[!is.na(v_mic)]
+  minmic <- ifelse(length(v_mic)==0,NA,base::min(v_mic,na.rm=TRUE))
+  maxmic <- ifelse(length(v_mic)==0,NA,base::max(v_mic,na.rm=TRUE))
+  avgmic <- ifelse(length(v_mic)==0,NA,mean(v_mic,na.rm=TRUE))
+  sdmic <- ifelse(length(v_mic)==0,NA,stats::sd(v_mic,na.rm=TRUE))
+  varmic <- ifelse(length(v_mic)==0,NA,stats::var(v_mic,na.rm=TRUE))
+  histmic <- c()
+  if(length(v_mic)>1 && !all(v_mic == v_mic[1])) {
+    histmic <- as.vector(graphics::hist(v_mic,breaks=seq(from=base::min(v_mic), to=base::max(v_mic), by=(base::max(v_mic)-base::min(v_mic))/10), plot = FALSE)$counts)
+  } else { histmic <- c(rep(NA,10))}
+  names(histmic) <- c("bin1","bin2","bin3","bin4","bin5","bin6","bin7","bin8","bin9","bin10")
+  out.mic = cbind(min=minmic, max=maxmic, avg=avgmic, sd=sdmic, var=varmic, t(histmic))
+
+  #MAS
+  v_mas <- tmp$MAS[upper.tri(tmp$MAS, diag = FALSE)]
+  v_mas <- v_mas[!is.na(v_mas)]
+  minmas <- ifelse(length(v_mas)==0,NA,base::min(v_mas,na.rm=TRUE))
+  maxmas <- ifelse(length(v_mas)==0,NA,base::max(v_mas,na.rm=TRUE))
+  avgmas <- ifelse(length(v_mas)==0,NA,mean(v_mas,na.rm=TRUE))
+  sdmas <- ifelse(length(v_mas)==0,NA,stats::sd(v_mas,na.rm=TRUE))
+  varmas <- ifelse(length(v_mas)==0,NA,stats::var(v_mas,na.rm=TRUE))
+  histmas <- c()
+  if(length(v_mas)>1 && !all(v_mas == v_mas[1])) {
+    histmas <- as.vector(graphics::hist(v_mas,breaks=seq(from=base::min(v_mas), to=base::max(v_mas), by=(base::max(v_mas)-base::min(v_mas))/10), plot = FALSE)$counts)
+  } else { histmas <- c(rep(NA,10))}
+  names(histmas) <- c("bin1","bin2","bin3","bin4","bin5","bin6","bin7","bin8","bin9","bin10")
+  out.mas = cbind(min=minmas, max=maxmas, avg=avgmas, sd=sdmas, var=varmas, t(histmas))
+
+  #MEV
+  v_mev <- tmp$MEV[upper.tri(tmp$MEV, diag = FALSE)]
+  v_mev <- v_mev[!is.na(v_mev)]
+  minmev <- ifelse(length(v_mev)==0,NA,base::min(v_mev,na.rm=TRUE))
+  maxmev <- ifelse(length(v_mev)==0,NA,base::max(v_mev,na.rm=TRUE))
+  avgmev <- ifelse(length(v_mev)==0,NA,mean(v_mev,na.rm=TRUE))
+  sdmev <- ifelse(length(v_mev)==0,NA,stats::sd(v_mev,na.rm=TRUE))
+  varmev <- ifelse(length(v_mev)==0,NA,stats::var(v_mev,na.rm=TRUE))
+  histmev <- c()
+  if(length(v_mev)>1 && !all(v_mev == v_mev[1])) {
+    histmev <- as.vector(graphics::hist(v_mev,breaks=seq(from=base::min(v_mev), to=base::max(v_mev), by=(base::max(v_mev)-base::min(v_mev))/10), plot = FALSE)$counts)
+  } else { histmev <- c(rep(NA,10))}
+  names(histmev) <- c("bin1","bin2","bin3","bin4","bin5","bin6","bin7","bin8","bin9","bin10")
+  out.mev = cbind(min=minmev, max=maxmev, avg=avgmev, sd=sdmev, var=varmev, t(histmev))
+ 
+  #MCN
+  v_mcn <- tmp$MCN[upper.tri(tmp$MCN, diag = FALSE)]
+  v_mcn <- v_mcn[!is.na(v_mcn)]
+
+  minmcn <- ifelse(length(v_mcn)==0,NA,base::min(v_mcn,na.rm=TRUE))
+  maxmcn <- ifelse(length(v_mcn)==0,NA,base::max(v_mcn,na.rm=TRUE))
+  avgmcn <- ifelse(length(v_mcn)==0,NA,mean(v_mcn,na.rm=TRUE))
+  sdmcn <- ifelse(length(v_mcn)==0,NA,stats::sd(v_mcn,na.rm=TRUE))
+  varmcn <- ifelse(length(v_mcn)==0,NA,stats::var(v_mcn,na.rm=TRUE))
+  histmcn <- c()
+  if(length(v_mcn)>1 && !all(v_mcn == v_mcn[1])) {
+    histmcn <- as.vector(graphics::hist(v_mcn,breaks=seq(from=base::min(v_mcn), to=base::max(v_mcn), by=(base::max(v_mcn)-base::min(v_mcn))/10), plot = FALSE)$counts)
+  } else { histmcn <- c(rep(NA,10))}
+  names(histmcn) <- c("bin1","bin2","bin3","bin4","bin5","bin6","bin7","bin8","bin9","bin10")
+  out.mcn = cbind(min=minmcn, max=maxmcn, avg=avgmcn, sd=sdmcn, var=varmcn, t(histmcn))
+
+  #TIC
+  v_tic <- tmp$TIC[upper.tri(tmp$TIC, diag = FALSE)]
+  v_tic <- v_tic[!is.na(v_tic)]
+
+  mintic <- ifelse(length(v_tic)==0,NA,base::min(v_tic,na.rm=TRUE))
+  maxtic <- ifelse(length(v_tic)==0,NA,base::max(v_tic,na.rm=TRUE))
+  avgtic <- ifelse(length(v_tic)==0,NA,mean(v_tic,na.rm=TRUE))
+  sdtic <- ifelse(length(v_tic)==0,NA,stats::sd(v_tic,na.rm=TRUE))
+  vartic <- ifelse(length(v_tic)==0,NA,stats::var(v_tic,na.rm=TRUE))
+
+  histtic <- c()
+  if(length(v_tic)>1 && !all(v_tic == v_tic[1])) {
+    histtic <- as.vector(graphics::hist(v_tic,breaks=seq(from=base::min(v_tic), to=base::max(v_tic), by=(base::max(v_tic)-base::min(v_tic))/10), plot = FALSE)$counts)
+  } else { histtic <- c(rep(NA,10))}
+
+  names(histtic) <- c("bin1","bin2","bin3","bin4","bin5","bin6","bin7","bin8","bin9","bin10")
+
+  out.tic = cbind(min=mintic, max=maxtic, avg=avgtic, sd=sdtic, var=vartic, t(histtic))
+
+  return(list('MIC' = out.mic, 'MAS' = out.mas, 'MEV' = out.mev, 'MCN' = out.mcn, 'TIC' = out.tic))
+}
+
+########################################################
+#'
 #' 8. Maximal Information Coefficient (MIC) between Numeric Attributes
 #' min, max, mean, sd, var, hist
 #'
@@ -349,7 +454,7 @@ statsMIC_NumAttrs <- function(ds,tgt) {
 
   numattrs <- as.numeric(which(sapply(ds,is.numeric)))
   numattrs <- setdiff(numattrs,tgt)
-
+  
   v_mic <- c()
 
   if(length(numattrs)>1) {
