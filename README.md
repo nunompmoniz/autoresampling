@@ -21,7 +21,7 @@ To install from github use the following command lines in R:
 
 ``` r
 library(devtools)  # You need to install this package!
-install_github("nunompmoniz/autoresampling",ref="master")
+install_github("nunompmoniz/autoresampling",ref="development")
 ```
 
 After installation the package can be used loaded by doing:
