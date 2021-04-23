@@ -782,21 +782,25 @@ statsMuI <- function(ds,tgt) {
   attrs <- 1:ncol(ds)
   attrs <- setdiff(attrs,tgt)
 
-  v_mui <- c()
+  #create a discretize version of ds
+  tmpM <- infotheo::discretize(ds[,attrs],nbins=10)
+  tmp.res <-  infotheo::mutinformation(tmpM)
+  
+  v_mui <- tmp.res[upper.tri(tmp.res, diag = FALSE)]
 
-  if(length(attrs)>0) {
-
-    for(i in 1:(length(attrs)-1)) {
-
-      for(j in 2:length(attrs)) {
-
-        v_mui <- c(v_mui,infotheo::mutinformation(infotheo::discretize(ds[,i],nbins=10),infotheo::discretize(ds[,j],nbins=10)))
-
-      }
-
-    }
-
-  }
+  #if(length(attrs)>0) {
+#
+  #  for(i in 1:(length(attrs)-1)) {
+#
+ #     for(j in 2:length(attrs)) {
+#
+ #       v_mui <- c(v_mui,infotheo::mutinformation(infotheo::discretize(ds[,i:j],nbins=10),infotheo::discretize(ds[,j],nbins=10)))
+#
+ #     }
+#
+ #   }
+#
+ # }
 
   v_mui <- v_mui[!is.na(v_mui)]
   minmui <- ifelse(length(v_mui)==0,NA,base::min(v_mui,na.rm=TRUE))
