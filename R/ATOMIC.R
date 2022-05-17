@@ -7,6 +7,7 @@
 #' @param nmodels Number of models to consider. Default is 20. Only such number of top-k models (based on internal validation performance with cross-validation methodology) will be tested.
 #' @param metric Evaluation metric used for assessing the optimisation of predictive performance. Default is F1-Score
 #' @param numCores number of cores for parallel computing
+#' @param modelPath path to sysdata file containing details for meta-model
 #' @param ... Other parameters
 #'
 #' @return A predictive model containing the workflow (algorithm+resampling strategy) that are estimated to optimise the generalisation error.
@@ -26,11 +27,17 @@
 #' atomic.m <- ATOMIC(form,PimaIndiansDiabetes)
 #'
 #' }
-ATOMIC <- function(form, train, nmodels=20, metric="F1", numCores=1, ...) {
+ATOMIC <- function(form, train, nmodels=20, metric="F1", numCores=1, modelPath=NULL, ...) {
 
   if(!(metric %in% c("F1"))) return(cat("Metric not implemented yet. Let me know at https://github.com/nunompmoniz/autoresampling"))
 
   metafeats <- getMetaFeatures(train, form,numCores=numCores)
+
+  if(!is.null(modelPath)) {
+    rm(sysdata)
+    load(modelPath)
+  }
+
   wfconf <- sysdata$wf.config.class
 
   metadb <- cbind(wfconf,metafeats)

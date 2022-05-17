@@ -4,7 +4,15 @@
 \alias{ATOMIC}
 \title{Automated Imbalanced Classification}
 \usage{
-ATOMIC(form, train, nmodels = 20, metric = "F1", numCores = 1, ...)
+ATOMIC(
+  form,
+  train,
+  nmodels = 20,
+  metric = "F1",
+  numCores = 1,
+  modelPath = NULL,
+  ...
+)
 }
 \arguments{
 \item{form}{A model formula}
@@ -16,6 +24,8 @@ ATOMIC(form, train, nmodels = 20, metric = "F1", numCores = 1, ...)
 \item{metric}{Evaluation metric used for assessing the optimisation of predictive performance. Default is F1-Score}
 
 \item{numCores}{number of cores for parallel computing}
+
+\item{modelPath}{path to sysdata file containing details for meta-model}
 
 \item{...}{Other parameters}
 }
