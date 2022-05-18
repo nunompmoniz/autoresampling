@@ -34,8 +34,8 @@ ATOMIC <- function(form, train, nmodels=20, metric="F1", numCores=1, modelPath=N
   metafeats <- getMetaFeatures(train, form,numCores=numCores)
 
   if(!is.null(modelPath)) {
-    rm(sysdata)
     load(modelPath)
+    message("Assuming a user-defined sysdata file.")
   }
 
   wfconf <- sysdata$wf.config.class
